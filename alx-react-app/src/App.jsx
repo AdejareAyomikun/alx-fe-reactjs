@@ -5,6 +5,7 @@ import WelcomeMessage from "./components/WelcomeMessage";
 import Header from "./components/Header";
 import MainContent from "./components/MainContent";
 import Footer from "./components/Footer";
+import UserProfile from "./components/UserProfile";
 
 function App() {
   return (
@@ -12,6 +13,11 @@ function App() {
       <Header />
       <MainContent />
       <WelcomeMessage />
+      <UserProfile 
+      name="Adejare" 
+      age={26} 
+      bio="I Love Coding!" 
+      />
       <Footer />
     </>
   );
