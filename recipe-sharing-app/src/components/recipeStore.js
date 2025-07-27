@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useRecipeStore = create((set, get) => ({
-  recipes: [],
+  recipes: ["setSearchTerm", "searchTerm"],
   searchTerm: "",
   filteredRecipes: [],
   addRecipe: (newRecipe) => {
