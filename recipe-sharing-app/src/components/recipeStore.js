@@ -4,6 +4,8 @@ const useRecipeStore = create((set, get) => ({
   recipes: ["setSearchTerm", "searchTerm"],
   searchTerm: "",
   filteredRecipes: [],
+  favorites: [],
+  recommendations: [],
   addRecipe: (newRecipe) => {
     const updated = [...get().recipes, newRecipe];
     set({ recipes: updated });
@@ -49,6 +51,31 @@ const useRecipeStore = create((set, get) => ({
   setRecipes: (recipes) => {
     set({ recipes });
     get().filterRecipes();
+  },
+
+    // ⭐ Favorites
+  addFavorite: (recipeId) => {
+    const current = get().favorites;
+    if (!current.includes(recipeId)) {
+      set({ favorites: [...current, recipeId] });
+    }
+  },
+
+  removeFavorite: (recipeId) => {
+    set((state) => ({
+      favorites: state.favorites.filter((id) => id !== recipeId),
+    }));
+  },
+
+  isFavorite: (recipeId) => get().favorites.includes(recipeId),
+
+  // 🔍 Simple mock recommendations based on favorites
+  generateRecommendations: () => {
+    const { recipes, favorites } = get();
+    const recommended = recipes.filter(
+      (r) => favorites.includes(r.id) === false && Math.random() > 0.5
+    );
+    set({ recommendations: recommended });
   },
 }));
 

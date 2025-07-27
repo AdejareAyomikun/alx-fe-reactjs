@@ -1,7 +1,8 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecipeStore } from './recipeStore';
 import EditRecipeForm from './EditRecipeForm';
 import DeleteRecipeButton from './DeleteRecipeButton';
+import FavoriteToggleButton from './FavoriteToggleButton';
 import { useState } from 'react';
 
 const RecipeDetails = () => {
@@ -11,7 +12,6 @@ const RecipeDetails = () => {
     state.recipes.find((r) => r.id === recipeId)
   );
   const [editing, setEditing] = useState(false);
-  const navigate = useNavigate();
 
   if (!recipe) {
     return <p>Recipe not found.</p>;
@@ -26,7 +26,8 @@ const RecipeDetails = () => {
           <h2>{recipe.title}</h2>
           <p>{recipe.description}</p>
           <button onClick={() => setEditing(true)}>Edit</button>
-          <DeleteRecipeButton id={recipe.id} onDelete={() => navigate('/')} />
+          <DeleteRecipeButton id={recipe.id} />
+          <FavoriteToggleButton recipeId={recipe.id} />
         </>
       )}
     </div>

@@ -17,6 +17,7 @@ function App() {
               <AddRecipeForm />
               <SearchBar />
               <RecipeList />
+              <RecipeDetails />
             </>
           } />
           <Route path="/recipe/:id" element={<RecipeDetails />} />
