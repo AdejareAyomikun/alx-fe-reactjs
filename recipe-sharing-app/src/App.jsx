@@ -1,8 +1,8 @@
-// import './App.css'
+import './App.css'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import AddRecipeForm from "./components/AddRecipeForm";
 import RecipeList from "./components/RecipeList";
-import RecipeDetails from './components/RecipeDetails';
+// import RecipeDetails from './components/RecipeDetails';
 import SearchBar from './components/SearchBar';
 
 function App() {
@@ -17,10 +17,10 @@ function App() {
               <AddRecipeForm />
               <SearchBar />
               <RecipeList />
-              <RecipeDetails />
+              {/* <RecipeDetails /> */}
             </>
           } />
-          <Route path="/recipe/:id" element={<RecipeDetails />} />
+          {/* <Route path="/recipe/:id" element={<RecipeDetails />} /> */}
         </Routes>
       </div>
     </BrowserRouter>
