@@ -1,31 +1,35 @@
-// src/services/githubService.js
 import axios from 'axios';
 
-const github = axios.create({
-  baseURL: 'https://api.github.com',
-  headers: {
-    Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`
-  }
-});
+const searchGitHubUsers = async ({ username, location, minRepos }) => {
+  let queryParts = [];
 
-const searchGitHubUsers = async ({ username, location, repos }) => {
-  let query = [];
+  if (username) queryParts.push(`${username} in:login`);
+  if (location) queryParts.push(`location:${location}`);
+  if (minRepos) queryParts.push(`repos:>=${minRepos}`);
 
-  if (username) query.push(`${username} in:login`);
-  if (location) query.push(`location:${location}`);
-  if (repos) query.push(`repos:>=${repos}`);
+  const query = queryParts.join(' ');
+  const url = `https://api.github.com/search/users?q=${encodeURIComponent(query)}`;
 
-  const q = query.join(' ');
-  const response = await github.get(`/search/users?q=${encodeURIComponent(q)}`);
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`
+    }
+  });
 
   const users = response.data.items;
 
-  // Fetch full details for each user (as GitHub search API only returns partial data)
-  const userDetails = await Promise.all(
-    users.map(user => github.get(`/users/${user.login}`).then(res => res.data))
+  // Get full user data (search API returns partial info)
+  const fullDetails = await Promise.all(
+    users.map(user =>
+      axios.get(`https://api.github.com/users/${user.login}`, {
+        headers: {
+          Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`
+        }
+      }).then(res => res.data)
+    )
   );
 
-  return userDetails;
+  return fullDetails;
 };
 
 export default searchGitHubUsers;
