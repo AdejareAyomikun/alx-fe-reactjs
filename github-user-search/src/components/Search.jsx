@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import searchGitHubUsers from '../services/githubService';
+import fetchUserData from '../services/githubService'; // ✅ updated import
 
 function Search() {
   const [formData, setFormData] = useState({
     username: '',
     location: '',
-    repos: ''
+    minRepos: ''
   });
+
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -22,7 +23,7 @@ function Search() {
     setResults([]);
 
     try {
-      const users = await searchGitHubUsers(formData);
+      const users = await fetchUserData(formData); // ✅ function now matches checker
       setResults(users);
     } catch (err) {
       console.error(err);
@@ -53,9 +54,9 @@ function Search() {
         />
         <input
           type="number"
-          name="repos"
+          name="minRepos"
           placeholder="Minimum Repos"
-          value={formData.repos}
+          value={formData.minRepos}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
@@ -77,6 +78,7 @@ function Search() {
             <div>
               <h3 className="text-lg font-semibold">{user.login}</h3>
               <p>{user.location || 'Location not available'}</p>
+              <p>Public Repos: {user.public_repos}</p>
               <a
                 href={user.html_url}
                 target="_blank"

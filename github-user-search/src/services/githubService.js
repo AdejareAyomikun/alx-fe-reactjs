@@ -1,6 +1,7 @@
+// src/services/githubService.js
 import axios from 'axios';
 
-const searchGitHubUsers = async ({ username, location, minRepos }) => {
+const fetchUserData = async ({ username, location, minRepos }) => {
   let queryParts = [];
 
   if (username) queryParts.push(`${username} in:login`);
@@ -18,7 +19,6 @@ const searchGitHubUsers = async ({ username, location, minRepos }) => {
 
   const users = response.data.items;
 
-  // Get full user data (search API returns partial info)
   const fullDetails = await Promise.all(
     users.map(user =>
       axios.get(`https://api.github.com/users/${user.login}`, {
@@ -32,4 +32,4 @@ const searchGitHubUsers = async ({ username, location, minRepos }) => {
   return fullDetails;
 };
 
-export default searchGitHubUsers;
+export default fetchUserData;
