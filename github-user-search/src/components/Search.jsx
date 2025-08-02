@@ -1,25 +1,31 @@
-// src/components/Search.jsx
 import React, { useState } from 'react';
-import fetchUserData from '../services/githubService';
+import searchGitHubUsers from '../services/githubService';
 
 function Search() {
-  const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
+  const [formData, setFormData] = useState({
+    username: '',
+    location: '',
+    repos: ''
+  });
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username) return;
-
     setLoading(true);
     setError(false);
-    setUserData(null);
+    setResults([]);
 
     try {
-      const data = await fetchUserData(username);
-      setUserData(data);
+      const users = await searchGitHubUsers(formData);
+      setResults(users);
     } catch (err) {
+      console.error(err);
       setError(true);
     } finally {
       setLoading(false);
@@ -27,28 +33,62 @@ function Search() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-2xl mx-auto p-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
-          placeholder="Enter GitHub username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
         />
-        <button type="submit">Search</button>
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="number"
+          name="repos"
+          placeholder="Minimum Repos"
+          value={formData.repos}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
       </form>
 
-      {loading && <p>Loading...</p>}
-      {error && <p>"Looks like we cant find the user"</p>}
-      {userData && (
-        <div style={{ marginTop: '1rem', textAlign: 'left' }}>
-          <img src={userData.avatar_url} alt="avatar" width={100} />
-          <h3>{userData.name || userData.login}</h3>
-          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
-            View Profile
-          </a>
-        </div>
-      )}
+      {loading && <p className="mt-4 text-center">Loading...</p>}
+      {error && <p className="mt-4 text-center text-red-500">Looks like we cant find the user</p>}
+
+      <div className="mt-6 space-y-4">
+        {results.map((user) => (
+          <div key={user.id} className="p-4 border rounded flex items-center gap-4">
+            <img src={user.avatar_url} alt="avatar" className="w-16 h-16 rounded-full" />
+            <div>
+              <h3 className="text-lg font-semibold">{user.login}</h3>
+              <p>{user.location || 'Location not available'}</p>
+              <a
+                href={user.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                View Profile
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
